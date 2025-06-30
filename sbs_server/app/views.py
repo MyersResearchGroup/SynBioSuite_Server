@@ -11,6 +11,9 @@ import tricahue
 import sbol2
 import pudu
 
+import openpyxl
+import pandas as pd
+
 #routes
 #check if the app is running
 @app.route('/api/status')
@@ -254,3 +257,14 @@ def inspect_request():
         "message": "Request received successfully", 
         "files": files}), 200
 
+@app.route('/api/get_description_and_library_name', methods=['POST'])
+def upload_excel():
+    if 'file' not in request.files:
+        return 'No file part', 400
+    file = request.files['file']
+    if file.filename == '':
+        return 'No selected file', 400
+    dataframe1 = pd.read_excel(file, engine='openpyxl')
+    library_name = dataframe1[dataframe1.iloc[:, 1] == 'Library Name'].iloc[0, 2]
+    description = dataframe1[dataframe1.iloc[:, 1] == 'Description'].iloc[0, 2]
+    return jsonify({"name": library_name, "description": description})

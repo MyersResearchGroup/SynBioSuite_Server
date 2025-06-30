@@ -9,3 +9,5 @@ sbol2build
 flask_swagger_ui
 xlsxwriter
 pudupy==1.0.0b2
+openpyxl
+pandas
