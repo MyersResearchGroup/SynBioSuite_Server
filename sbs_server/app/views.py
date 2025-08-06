@@ -36,7 +36,7 @@ def upload_file_from_sbs_post():
     if params_file.filename == '':
         return 'No selected Params file', 400
     params_from_request = json.loads(params_file.read())
-    expected_params = ['fj_url', 'fj_token', 'sbh_url', 'sbh_token', 'sbh_collec', 'sbh_collec_desc', 'sbh_overwrite', 'fj_overwrite']
+    expected_params = ['fj_user', 'fj_url', 'fj_token', 'sbh_url', 'sbh_token', 'sbh_collec', 'sbh_collec_desc', 'sbh_overwrite', 'fj_overwrite']
     for param in expected_params:
         if param not in params_from_request:
             return 'Parameter ' + param + ' not found in request', 400
@@ -45,7 +45,7 @@ def upload_file_from_sbs_post():
     print(request.files['Metadata'])
     xdc = tricahue.XDC(input_excel_path = request.files['Metadata'],
             fj_url = params_from_request['fj_url'],
-            fj_user = None, 
+            fj_user = params_from_request['fj_user'], 
             fj_pass = None, 
             sbh_url = params_from_request['sbh_url'], 
             sbh_user = None, 
