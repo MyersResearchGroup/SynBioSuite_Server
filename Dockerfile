@@ -14,9 +14,6 @@ EXPOSE 5003
 COPY requirements.txt /app/
 RUN /usr/local/bin/python -m pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip list -V
-RUN pip show pudupy
-RUN pip show sbol2build
 
 # Create uploads directory
 RUN mkdir -p /app/uploads && \
