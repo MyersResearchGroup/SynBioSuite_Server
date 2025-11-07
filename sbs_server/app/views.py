@@ -193,29 +193,35 @@ def sbol_2_build_golden_gate():
 @app.route('/api/build_pudu', methods=['POST'])
 def build_pudu():
     # Error checking in the request
-    print("request", request.files)
+    #print("request", request.files)
 
-    if 'assembly_plan' not in request.files:
-        return jsonify({"error": "Missing assembly plan"}), 400
-    if 'wizard_selections' not in request.form:
-        return jsonify({"error": "Missing wizard selections"}), 400
+    #checking input
+    params_file = request.files['Params']
+    if params_file.filename == '':
+        return 'No selected Params file', 400
+    params_from_request = json.loads(params_file.read())
+    expected_params = ['assembly_plan', 'sbh_url', 'sbh_token']#'fj_user', 'fj_pass', 'sbh_url', 'sbh_user', 'sbh_pass', 'sbh_collec', 'sbh_collec_desc', 'sbh_overwrite', 'fj_overwrite']
+    for param in expected_params:
+        if param not in params_from_request:
+            return 'Parameter ' + param + ' not found in request', 400
 
-    wizard_selection = request.form.get('wizard_selections')
-    assembly_plan_file = request.files.get('assembly_plan')
-
-    # # Parse the json
-    wizard_selection_json = json.loads(wizard_selection)
-    build_method = wizard_selection_json.get('formValues').get('buildMethod')
-
-    # Check if the assembly method is valid
-    if build_method != 'PUDU':
-        return jsonify({"error": "Invalid build method"}), 400
-
-    # TODO: save xml to a file ('assembly_plan.xml')
+    #get assembly plan from SBH and store in doc
+    doc = sb2.Document()
+    part_shop = sb2.PartShop(params_from_request['sbh_url'])
+    part_shop.key = params_from_request['sbh_token']
+    part_shop.pull(params_from_request['assembly_plan'], doc)
+    module_definitions = []
+    for md in doc.moduleDefinitions:
+        module_definitions.append(md)
+    if len(module_definitions)=!1:
+        except ValueError as e:
+        # catch errors and return to frontend
+            return jsonify({"error": f"Only one ModuleDefinition is expected, got {len(module_definitions)}: {str(e)}"}), 400
+    
 
     try:
         # Run script (which has opentrons script hardcoded) using JSON file
-        log = subprocess.run(["python", "run_sbol2assembly.py"], capture_output=True).stdout
+        log = subprocess.run(["python", "files/run_sbol2assembly_libre.py"], capture_output=True).stdout
         curpath = os.path.abspath(os.curdir)
         print(curpath)
         # write captured output to a text file
